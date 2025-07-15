@@ -122,23 +122,12 @@ src/
 4. Copy your Firebase config to `src/lib/firebase.ts`
 
 ### Environment Variables
-1. Copy `.env.example` to `.env.local`:
-   ```bash
-   cp .env.example .env.local
-   ```
-2. Fill in your Firebase configuration values in `.env.local`:
+Create a `.env.local` file:
 ```env
-# Firebase Configuration
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
 ```
-
-**⚠️ Security Note:** Never commit your `.env.local` file to version control. It's already included in `.gitignore` to prevent accidental commits.
 
 ## 🚀 Deployment
 
@@ -199,26 +188,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Firebase** - Backend infrastructure
 - **TailwindCSS** - Styling framework
 - **Lucide** - Icon library
-
-## 🔒 Security
-
-### Environment Variables
-- All sensitive configuration is stored in environment variables
-- The `.env.local` file is automatically ignored by Git
-- Never commit API keys or secrets to version control
-
-### Firebase Security Rules
-Make sure to configure proper Firestore security rules:
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-```
 
 ## 📞 Support
 
