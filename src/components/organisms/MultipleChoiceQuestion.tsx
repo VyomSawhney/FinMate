@@ -19,7 +19,7 @@ export const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
-  const [showExplanation, setShowExplanation] = useState(false);
+
 
   const handleAnswerSelect = (answer: string) => {
     if (isAnswered) return;

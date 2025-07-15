@@ -23,11 +23,11 @@ export interface FirestoreUser {
   xp: number;
   level: number;
   streak: number;
-  lastLogin: any; // Firestore timestamp
+  lastLogin: unknown; // Firestore timestamp
   selectedGoal?: FinancialGoal;
   completedLessons?: string[];
-  createdAt: any; // Firestore timestamp
-  updatedAt: any; // Firestore timestamp
+  createdAt: unknown; // Firestore timestamp
+  updatedAt: unknown; // Firestore timestamp
 }
 
 export type FinancialGoal = 

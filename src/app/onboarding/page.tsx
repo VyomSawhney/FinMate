@@ -113,10 +113,10 @@ export default function OnboardingPage() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            What's your financial goal?
+            What&apos;s your financial goal?
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Choose the area you'd like to focus on first. Don't worry, you can always change this later!
+            Choose the area you&apos;d like to focus on first. Don&apos;t worry, you can always change this later!
           </p>
         </div>
 

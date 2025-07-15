@@ -30,7 +30,7 @@ export default function LessonPage({ params }: LessonPageProps) {
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [currentStep, setCurrentStep] = useState<'lesson' | 'questions' | 'completion'>('lesson');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
+
   const [xpEarned, setXpEarned] = useState(0);
   
   const { user, updateUserXP, markLessonCompleted } = useAuth();
@@ -83,7 +83,6 @@ export default function LessonPage({ params }: LessonPageProps) {
     try {
       await updateUserXP(xpEarned);
       await markLessonCompleted(lesson.id);
-      setIsCompleted(true);
       setCurrentStep('completion');
     } catch (error) {
       console.error('Error completing lesson:', error);
@@ -268,7 +267,7 @@ export default function LessonPage({ params }: LessonPageProps) {
                       Lesson Complete!
                     </h3>
                     <p className="text-gray-600 mb-6">
-                      You've learned about {lesson.title.toLowerCase()}. Great job!
+                      You&apos;ve learned about {lesson.title.toLowerCase()}. Great job!
                     </p>
                   </div>
                   <Button onClick={completeLesson} size="lg">
@@ -302,7 +301,7 @@ export default function LessonPage({ params }: LessonPageProps) {
                 Lesson Complete! 🎉
               </h2>
               <p className="text-gray-600 mb-6">
-                Congratulations! You've earned {xpEarned} XP for completing this lesson.
+                Congratulations! You&apos;ve earned {xpEarned} XP for completing this lesson.
               </p>
               
               <div className="flex items-center justify-center space-x-4 mb-8">

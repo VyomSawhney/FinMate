@@ -37,8 +37,8 @@ export default function AuthPage() {
         await signUp(email, password, displayName);
       }
       // Let the useEffect handle the redirect when user state updates
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -51,8 +51,8 @@ export default function AuthPage() {
     try {
       await signInWithGoogle();
       // Let the useEffect handle the redirect when user state updates
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }

@@ -13,8 +13,6 @@ import {
   Target, 
   BookOpen, 
   LogOut,
-  TrendingUp,
-  Calendar,
   Star,
   Play,
   CheckCircle,
@@ -73,9 +71,6 @@ export default function DashboardPage() {
     Array.isArray(user.completedLessons) && user.completedLessons.includes(lesson.id)
   );
   const progressPercentage = (completedLessons.length / lessons.length) * 100;
-  const totalXP = lessons.reduce((sum, lesson) => sum + lesson.xpValue, 0);
-  const earnedXP = completedLessons.reduce((sum, lesson) => sum + lesson.xpValue, 0);
-  const nextLevelXP = (user.level * 1000) - user.xp;
   const xpToNextLevel = 1000 - (user.xp % 1000);
 
   const handleLogout = async () => {

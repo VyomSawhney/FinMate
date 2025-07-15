@@ -15,8 +15,6 @@ import {
   Edit3, 
   Save, 
   X,
-  Plus,
-  Trash2,
   Trophy,
   Star,
   Flame,
@@ -479,7 +477,7 @@ export default function ProfilePage() {
               {selectedGoals.length === 0 && (
                 <div className="text-center py-8">
                   <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">No goals selected. Click "Edit Goals" to get started!</p>
+                  <p className="text-gray-600">No goals selected. Click &ldquo;Edit Goals&rdquo; to get started!</p>
                 </div>
               )}
             </div>

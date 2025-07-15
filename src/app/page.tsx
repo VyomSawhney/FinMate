@@ -12,17 +12,12 @@ import {
   BookOpen, 
   Star,
   TrendingUp,
-  PiggyBank,
-  CreditCard,
-  DollarSign,
   ArrowRight,
-  CheckCircle,
-  Users,
   Zap
 } from 'lucide-react';
 
 export default function LandingPage() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   const handleGetStarted = () => {
@@ -175,7 +170,7 @@ export default function LandingPage() {
               Why Choose FinMate?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              We've gamified financial education to make learning fun, engaging, and effective.
+              We&apos;ve gamified financial education to make learning fun, engaging, and effective.
             </p>
           </div>
           
@@ -263,7 +258,7 @@ export default function LandingPage() {
               <Card key={index} className="text-center">
                 <div className="text-4xl mb-4">{testimonial.avatar}</div>
                 <p className="text-gray-600 mb-4 italic">
-                  "{testimonial.content}"
+                  &ldquo;{testimonial.content}&rdquo;
                 </p>
                 <div>
                   <p className="font-semibold text-gray-900">{testimonial.name}</p>

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Question } from '@/types';
-import { Button } from '@/components/atoms/Button';
-import { Card } from '@/components/atoms/Card';
-import { CheckCircle, XCircle, ArrowRight, BookOpen } from 'lucide-react';
+import { Card } from '../atoms/Card';
+import { Button } from '../atoms/Button';
+import { ProgressBar } from '../atoms/ProgressBar';
+import { Question } from '../../types';
 
 interface QuestionRendererProps {
   question: Question;
@@ -21,17 +21,6 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
   xpValue,
   isLastQuestion
 }) => {
-  // Safety check for undefined question
-  if (!question) {
-    return (
-      <Card>
-        <div className="text-center py-8">
-          <p className="text-gray-500">Question not available</p>
-        </div>
-      </Card>
-    );
-  }
-
   const [selectedAnswer, setSelectedAnswer] = useState<string | boolean | number | null>(null);
   const [userInput, setUserInput] = useState('');
   const [categorizedItems, setCategorizedItems] = useState<{ [category: string]: string[] }>({});
@@ -58,6 +47,18 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
       setCategorizedItems({});
     }
   }, [question]);
+
+  // Early return for unsupported question types
+  if (!question || !['multiple-choice', 'true-false', 'fill-blank', 'drag-drop', 'calculation', 'open-ended'].includes(question.type)) {
+    return (
+      <Card>
+        <div className="text-center p-8">
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">Unsupported Question Type</h3>
+          <p className="text-gray-600">This question type is not yet supported.</p>
+        </div>
+      </Card>
+    );
+  }
 
   const handleSubmit = () => {
     let correct = false;
@@ -233,54 +234,49 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
       case 'drag-drop':
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {question.categories?.map((category) => (
-                <div key={category} className="p-4 border-2 border-dashed border-gray-300 rounded-lg min-h-[100px]">
-                  <h4 className="font-semibold text-gray-900 mb-3">{category}</h4>
-                  <div className="space-y-2">
-                    {categorizedItems[category]?.map((item, index) => (
-                      <div
-                        key={`${item}-${index}`}
-                        className="p-2 bg-gray-100 rounded text-sm flex items-center justify-between"
-                      >
-                        <span>{item}</span>
-                        <button
-                          onClick={() => handleRemoveFromCategory(item)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          ✗
-                        </button>
-                      </div>
-                    )) || []}
-                  </div>
-                </div>
-              )) || (
-                <div className="col-span-2 text-center text-gray-500">
-                  No categories available
-                </div>
-              )}
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-semibold text-gray-900 mb-3">Items to categorize:</h4>
-              <div className="space-y-3">
-                {getUncategorizedItems().map((item, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <span className="flex-1 p-2 bg-white border border-gray-300 rounded text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Uncategorized items */}
+              <div>
+                <h4 className="font-medium text-gray-700 mb-3">Items to categorize:</h4>
+                <div className="space-y-2">
+                  {getUncategorizedItems().map((item, index) => (
+                    <div
+                      key={index}
+                      className="p-3 bg-gray-50 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleCategorizeItem(item.text, Object.keys(categorizedItems)[0])}
+                    >
                       {item.text}
-                    </span>
-                    <div className="flex space-x-2">
-                      {question.categories?.map((category) => (
-                        <button
-                          key={category}
-                          onClick={() => handleCategorizeItem(item.text, category)}
-                          className="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
-                        >
-                          {category}
-                        </button>
-                      )) || []}
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+              {/* Categories */}
+              <div>
+                <h4 className="font-medium text-gray-700 mb-3">Categories:</h4>
+                <div className="space-y-4">
+                  {Object.keys(categorizedItems).map((category) => (
+                    <div key={category} className="border border-gray-200 rounded-lg p-3">
+                      <h5 className="font-medium text-gray-600 mb-2">{category}</h5>
+                      <div className="space-y-2">
+                        {categorizedItems[category].map((item, index) => (
+                          <div
+                            key={index}
+                            className="p-2 bg-blue-50 border border-blue-200 rounded flex justify-between items-center"
+                          >
+                            <span>{item}</span>
+                            <button
+                              onClick={() => handleRemoveFromCategory(item)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -290,13 +286,19 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
         return (
           <div className="space-y-4">
             <p className="text-gray-600">{question.text}</p>
-            <input
-              type="number"
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              placeholder="Enter your answer..."
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Your answer:
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="Enter your calculation result"
+              />
+            </div>
           </div>
         );
 
@@ -304,76 +306,97 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
         return (
           <div className="space-y-4">
             <p className="text-gray-600">{question.text}</p>
-            <textarea
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              placeholder="Type your answer..."
-              rows={4}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Your answer:
+              </label>
+              <textarea
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                rows={4}
+                placeholder="Type your answer here..."
+              />
+            </div>
           </div>
         );
 
       default:
-        return <div>Unsupported question type</div>;
+        return (
+          <div className="text-center text-gray-500">
+            Question type not supported
+          </div>
+        );
     }
   };
 
   return (
     <Card>
-      <div className="space-y-6">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+      <div className="p-6">
+        {/* Question Header */}
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">
             {question.text}
           </h3>
+          <div className="flex items-center justify-between text-sm text-gray-500">
+            <span>XP: {xpValue}</span>
+            <span>Question {question.id}</span>
+          </div>
         </div>
 
-        {renderQuestion()}
+        {/* Question Content */}
+        <div className="mb-6">
+          {renderQuestion()}
+        </div>
 
+        {/* Result Display */}
         {showResult && (
-          <div className={`p-4 rounded-lg ${
+          <div className={`mb-6 p-4 rounded-lg ${
             isCorrect ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
           }`}>
-            <div className="flex items-center space-x-2">
-              {isCorrect ? (
-                <CheckCircle className="w-5 h-5 text-green-600" />
-              ) : (
-                <XCircle className="w-5 h-5 text-red-600" />
-              )}
-              <span className={`font-medium ${
-                isCorrect ? 'text-green-800' : 'text-red-800'
+            <div className="flex items-center">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 ${
+                isCorrect ? 'bg-green-500' : 'bg-red-500'
               }`}>
-                {isCorrect ? 'Correct!' : 'Incorrect'}
-              </span>
+                <span className="text-white text-sm font-bold">
+                  {isCorrect ? '✓' : '✗'}
+                </span>
+              </div>
+              <div>
+                <p className={`font-medium ${
+                  isCorrect ? 'text-green-800' : 'text-red-800'
+                }`}>
+                  {isCorrect ? 'Correct!' : 'Incorrect'}
+                </p>
+                {question.explanation && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    {question.explanation}
+                  </p>
+                )}
+              </div>
             </div>
-            {question.explanation && (
-              <p className="mt-2 text-sm text-gray-600">
-                {question.explanation}
-              </p>
-            )}
           </div>
         )}
 
-        {!showResult && (
-          <Button
-            onClick={handleSubmit}
-            disabled={!canSubmit()}
-            className="w-full"
-          >
-            Submit Answer
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        )}
-
-        {showNext && (
-          <Button
-            onClick={handleNext}
-            className="w-full"
-          >
-            {isLastQuestion ? 'Continue to Dashboard' : 'Next Question'}
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        )}
+        {/* Action Buttons */}
+        <div className="flex justify-between">
+          {!showResult ? (
+            <Button
+              onClick={handleSubmit}
+              disabled={!canSubmit()}
+              className="flex-1"
+            >
+              Submit Answer
+            </Button>
+          ) : (
+            <Button
+              onClick={handleNext}
+              className="flex-1"
+            >
+              {isLastQuestion ? 'Finish Lesson' : 'Next Question'}
+            </Button>
+          )}
+        </div>
       </div>
     </Card>
   );
