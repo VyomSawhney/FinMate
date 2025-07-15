@@ -39,31 +39,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check if Firebase is initialized
+    if (!auth || !db) {
+      console.warn('Firebase not initialized, skipping auth state listener');
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setFirebaseUser(firebaseUser);
       
       if (firebaseUser) {
-        // Get user data from Firestore
-        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          // Convert Firestore timestamps to Date objects
-          const processedUserData: User = {
-            uid: userData.uid || firebaseUser.uid,
-            email: userData.email || firebaseUser.email || '',
-            displayName: userData.displayName || firebaseUser.displayName || undefined,
-            photoURL: userData.photoURL || firebaseUser.photoURL || undefined,
-            lastLogin: userData.lastLogin?.toDate?.() || new Date(),
-            createdAt: userData.createdAt?.toDate?.() || new Date(),
-            updatedAt: userData.updatedAt?.toDate?.() || new Date(),
-            completedLessons: Array.isArray(userData.completedLessons) ? userData.completedLessons : [],
-            selectedGoals: Array.isArray(userData.selectedGoals) ? userData.selectedGoals : (userData.selectedGoal ? [userData.selectedGoal] : ['budgeting']),
-            primaryGoal: userData.primaryGoal || userData.selectedGoal || 'budgeting',
-            xp: typeof userData.xp === 'number' ? userData.xp : 0,
-            level: typeof userData.level === 'number' ? userData.level : 1,
-            streak: typeof userData.streak === 'number' ? userData.streak : 0,
-          } as User;
-          setUser(processedUserData);
+        try {
+          // Get user data from Firestore
+          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            // Convert Firestore timestamps to Date objects
+            const processedUserData: User = {
+              uid: userData.uid || firebaseUser.uid,
+              email: userData.email || firebaseUser.email || '',
+              displayName: userData.displayName || firebaseUser.displayName || undefined,
+              photoURL: userData.photoURL || firebaseUser.photoURL || undefined,
+              lastLogin: userData.lastLogin?.toDate?.() || new Date(),
+              createdAt: userData.createdAt?.toDate?.() || new Date(),
+              updatedAt: userData.updatedAt?.toDate?.() || new Date(),
+              completedLessons: Array.isArray(userData.completedLessons) ? userData.completedLessons : [],
+              selectedGoals: Array.isArray(userData.selectedGoals) ? userData.selectedGoals : (userData.selectedGoal ? [userData.selectedGoal] : ['budgeting']),
+              primaryGoal: userData.primaryGoal || userData.selectedGoal || 'budgeting',
+              xp: typeof userData.xp === 'number' ? userData.xp : 0,
+              level: typeof userData.level === 'number' ? userData.level : 1,
+              streak: typeof userData.streak === 'number' ? userData.streak : 0,
+            } as User;
+            setUser(processedUserData);
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+          setUser(null);
         }
       } else {
         setUser(null);
